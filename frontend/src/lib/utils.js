@@ -1,4 +1,4 @@
-// lib/utils.js
+// src/lib/utils.js
 export const formatCurrency = (amount, currency = 'USD') => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -6,12 +6,16 @@ export const formatCurrency = (amount, currency = 'USD') => {
   }).format(amount)
 }
 
-export const formatDate = (date, format = 'yyyy-MM-dd') => {
+export const formatDate = (date) => {
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
   })
+}
+
+export const formatDateForInput = (date) => {
+  return new Date(date).toISOString().split('T')[0]
 }
 
 export const cn = (...classes) => {
