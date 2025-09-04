@@ -1,82 +1,105 @@
 // src/app/page.js
-import Link from 'next/link'
-import { ArrowRight, TrendingUp, Shield, PieChart } from 'lucide-react'
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { FaMoneyBillWave, FaChartPie, FaShieldAlt } from "react-icons/fa";
 
 export default function Home() {
   const features = [
     {
-      icon: TrendingUp,
-      title: 'Track Expenses',
-      description: 'Easily log and categorize your daily expenses with intuitive interface',
-      color: 'text-blue-600'
+      icon: FaMoneyBillWave,
+      title: "Track Expenses",
+      description:
+        "Easily log and categorize your daily expenses with an intuitive interface",
+      color: "bg-blue-100 text-blue-600",
     },
     {
-      icon: PieChart,
-      title: 'Visual Analytics',
-      description: 'Get beautiful charts and insights about your spending patterns',
-      color: 'text-green-600'
+      icon: FaChartPie,
+      title: "Visual Analytics",
+      description:
+        "Get beautiful charts and insights about your spending patterns",
+      color: "bg-green-100 text-green-600",
     },
     {
-      icon: Shield,
-      title: 'Secure & Private',
-      description: 'Your financial data is encrypted and never shared with third parties',
-      color: 'text-purple-600'
-    }
-  ]
+      icon: FaShieldAlt,
+      title: "Secure & Private",
+      description:
+        "Your financial data is encrypted and never shared with third parties",
+      color: "bg-purple-100 text-purple-600",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-500">
       {/* Navigation */}
-      <nav className="flex justify-between items-center p-6">
+      <nav className="fixed top-0 left-0 right-0 flex justify-between items-center px-6 py-4 backdrop-blur-md bg-white/70 dark:bg-gray-900/70 shadow-sm z-50">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+          <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+            <FaMoneyBillWave size={18} className="text-white" />
           </div>
-          <span className="text-xl font-bold text-gray-900 dark:text-white">FinanceTracker</span>
+          <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-500 text-transparent bg-clip-text">
+            FinanceTracker
+          </span>
         </div>
-        
+
         <div className="flex items-center space-x-4">
-          <Link href="/auth/login" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+          <Link
+            href="/auth/login"
+            className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white transition-colors"
+          >
             Sign In
           </Link>
-          <Link href="/auth/register" className="btn-primary">
+          <Link
+            href="/auth/register"
+            className="px-4 py-2 rounded-xl bg-blue-600 text-white font-medium shadow-md hover:bg-blue-700 transition-all"
+          >
             Get Started
           </Link>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="container mx-auto px-6 py-20 text-center">
-        <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-          Take Control of Your
-          <span className="text-primary-600"> Financial Life</span>
+      <div className="container mx-auto px-6 pt-32 pb-20 text-center">
+        <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight text-gray-900 dark:text-white">
+          Take Control of Your{" "}
+          <span className="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
+            Financial Life
+          </span>
         </h1>
-        
+
         <p className="text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-          Beautifully track your income and expenses, set budgets, and achieve your financial goals 
-          with our intuitive personal finance tracker.
+          Beautifully track your income and expenses, set budgets, and achieve
+          your financial goals with our intuitive personal finance tracker.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20">
-          <Link href="/register" className="btn-primary text-lg px-8 py-4 group">
+          <Link
+            href="/auth/register"
+            className="btn-primary text-lg px-8 py-4 rounded-xl flex items-center gap-2 bg-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+          >
             Start Free Trial
-            <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-5 h-5" />
           </Link>
-          <Link href="/demo" className="btn-secondary text-lg px-8 py-4">
+          <Link
+            href="/demo"
+            className="btn-secondary text-lg px-8 py-4 rounded-xl border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+          >
             View Demo
           </Link>
         </div>
 
         {/* Features Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mt-16">
+        <div className="grid md:grid-cols-3 gap-10 mt-16">
           {features.map((feature, index) => {
-            const Icon = feature.icon
+            const Icon = feature.icon;
             return (
-              <div key={index} className="card group hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <Icon className="w-6 h-6" />
+              <div
+                key={index}
+                className="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow-md group hover:shadow-xl hover:-translate-y-2 transition-all duration-300 text-center"
+              >
+                <div
+                  className={`w-16 h-16 ${feature.color} rounded-full flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform`}
+                >
+                  <Icon size={28} />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
                   {feature.title}
@@ -85,30 +108,10 @@ export default function Home() {
                   {feature.description}
                 </p>
               </div>
-            )
+            );
           })}
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary-600">10K+</div>
-            <div className="text-gray-600 dark:text-gray-400">Active Users</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary-600">$50M+</div>
-            <div className="text-gray-600 dark:text-gray-400">Tracked</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary-600">99.9%</div>
-            <div className="text-gray-600 dark:text-gray-400">Uptime</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary-600">24/7</div>
-            <div className="text-gray-600 dark:text-gray-400">Support</div>
-          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
