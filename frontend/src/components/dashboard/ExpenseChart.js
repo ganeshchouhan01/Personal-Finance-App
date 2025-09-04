@@ -6,7 +6,21 @@ import { useAuth } from '../../contexts/AuthContext'
 import { toast } from 'sonner'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 import { TrendingUp, PieChart as PieChartIcon, Calendar } from 'lucide-react'
+import api from '../../lib/api'
 
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FF6B6B', '#4ECDC4']
+
+const mockBarData = [
+  { name: 'Jan', income: 2500, expense: 1200 },
+  { name: 'Feb', income: 2200, expense: 980 },
+  { name: 'Mar', income: 2800, expense: 1450 }
+]
+
+const mockPieData = [
+  { name: 'Groceries', value: 1200 },
+  { name: 'Rent', value: 800 },
+  { name: 'Entertainment', value: 450 }
+]
 const ExpenseChart = () => {
   const [chartData, setChartData] = useState([])
   const [pieData, setPieData] = useState([])
@@ -15,64 +29,70 @@ const ExpenseChart = () => {
   const [loading, setLoading] = useState(true)
   const { user } = useAuth()
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FF6B6B', '#4ECDC4']
 
   useEffect(() => {
     fetchChartData()
   }, [timeRange])
 
-  const fetchChartData = async () => {
-    try {
-      // Mock data for demonstration - in real app, fetch from API
-      const mockBarData = [
-        { name: 'Jan', expense: 1200, income: 2500 },
-        { name: 'Feb', expense: 980, income: 2200 },
-        { name: 'Mar', expense: 1450, income: 2800 },
-        { name: 'Apr', expense: 1100, income: 2600 },
-        { name: 'May', expense: 1350, income: 3000 },
-        { name: 'Jun', expense: 1600, income: 3200 },
-        { name: 'Jul', expense: 1250, income: 2800 },
-        { name: 'Aug', expense: 1400, income: 2900 },
-        { name: 'Sep', expense: 1150, income: 2700 },
-        { name: 'Oct', expense: 1300, income: 3100 },
-        { name: 'Nov', expense: 1550, income: 3300 },
-        { name: 'Dec', expense: 1700, income: 3500 }
-      ]
+  const getStartDate = (range) => {
+  const today = new Date()
+  const date = new Date(today)
 
-      const mockPieData = [
-        { name: 'Groceries', value: 1200 },
-        { name: 'Rent', value: 800 },
-        { name: 'Entertainment', value: 450 },
-        { name: 'Utilities', value: 300 },
-        { name: 'Transportation', value: 250 },
-        { name: 'Dining', value: 600 }
-      ]
-
-      // Filter data based on time range
-      let filteredBarData = mockBarData
-      if (timeRange === 'quarter') {
-        filteredBarData = mockBarData.slice(-3)
-      } else if (timeRange === 'week') {
-        filteredBarData = [
-          { name: 'Mon', expense: 120, income: 0 },
-          { name: 'Tue', expense: 85, income: 0 },
-          { name: 'Wed', expense: 150, income: 0 },
-          { name: 'Thu', expense: 95, income: 0 },
-          { name: 'Fri', expense: 180, income: 0 },
-          { name: 'Sat', expense: 220, income: 0 },
-          { name: 'Sun', expense: 160, income: 0 }
-        ]
-      }
-
-      setChartData(filteredBarData)
-      setPieData(mockPieData)
-    } catch (error) {
-      console.error('Error fetching chart data:', error)
-      toast.error('Failed to load chart data')
-    } finally {
-      setLoading(false)
-    }
+  switch (range) {
+    case 'week':
+      date.setDate(today.getDate() - 7)
+      break
+    case 'month':
+      date.setMonth(today.getMonth() - 1)
+      break
+    case 'quarter':
+      date.setMonth(today.getMonth() - 3)
+      break
+    case 'year':
+      date.setFullYear(today.getFullYear() - 1)
+      break
+    default:
+      date.setMonth(today.getMonth() - 1)
   }
+
+  return date.toISOString().split('T')[0]
+}
+
+  
+  const fetchChartData = async () => {
+  try {
+    setLoading(true)
+
+    // 🟦 1. Fetch bar chart data (income vs expense)
+    const barRes = await api.get('/analytics/income-vs-expense', {
+      params: {
+        period: timeRange === 'week' ? 'weekly' : timeRange === 'quarter' ? 'quarterly' : 'monthly',
+        months: 12,
+      },
+    })
+
+    const barData = barRes.data?.data || []
+
+    // 🟨 2. Fetch pie chart data (category spending)
+    const pieRes = await api.get('/analytics/category-spending', {
+      params: {
+        startDate: getStartDate(timeRange),
+        endDate: new Date().toISOString().split('T')[0], // today
+        type: 'expense',
+      },
+    })
+
+    const pieData = pieRes.data?.data || []
+
+    setChartData(barData)
+      setPieData(formattedPieData.length > 0 ? formattedPieData : mockPieData)
+  } catch (error) {
+    console.error('Error fetching chart data:', error)
+    toast.error('Failed to load chart data')
+  } finally {
+    setLoading(false)
+  }
+}
 
   const formatCurrency = (value) => {
     const currency = user?.currency || 'USD'
