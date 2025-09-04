@@ -32,12 +32,12 @@ export const protect = async (req, res, next) => {
       }
 
       // Check if user account is verified
-      if (!req.user.isVerified && req.originalUrl !== '/api/auth/verify-email') {
-        return res.status(401).json({
-          success: false,
-          message: 'Please verify your email address to access this resource'
-        });
-      }
+      // if (!req.user.isVerified && req.originalUrl !== '/api/auth/verify-email') {
+      //   return res.status(401).json({
+      //     success: false,
+      //     message: 'Please verify your email address to access this resource'
+      //   });
+      // }
 
       next();
     } catch (error) {

@@ -5,6 +5,7 @@ import { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { loginUser, registerUser, getCurrentUser, logoutUser } from '../lib/auth'
 import { setToken, removeToken, getToken } from '../lib/api'
+import Cookies from 'js-cookie'
 
 const AuthContext = createContext()
 
@@ -40,10 +41,13 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
+      debugger
       const { user: userData, token } = await loginUser(credentials)
-      setToken(token)
-      setUser(userData)
+      await setToken(token)
+      await setUser(userData)
+       setTimeout(() => {
       router.push('/dashboard')
+    }, 50)
       return { success: true }
     } catch (error) {
       return { success: false, error: error.message }
@@ -70,7 +74,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       removeToken()
       setUser(null)
-      router.push('/login')
+      router.push('/auth/login')
     }
   }
 

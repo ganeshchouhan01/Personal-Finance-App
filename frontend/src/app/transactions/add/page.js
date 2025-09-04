@@ -3,10 +3,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Layout from '@/components/layout/Layout'
-import TransactionForm from '@/components/transactions/TransactionForm'
+import Layout from '../../../components/layout/Layout'
+import TransactionForm from '../../../components/transactions/TransactionForm'
 import { toast } from 'sonner'
-import api from '@/lib/api'
+import api from '../../../lib/api'
 
 const AddTransaction = () => {
   const [loading, setLoading] = useState(false)

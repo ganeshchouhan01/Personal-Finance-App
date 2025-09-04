@@ -46,8 +46,8 @@ export default function Login() {
 
   const fillDemoCredentials = () => {
     setCredentials({
-      email: 'xihebov970@futurejs.com',
-      password: '1234Sa',
+      email: 'vewoc93565@lanipe.com',
+      password: '1234Sr',
     })
     toast.info('Demo credentials filled. Click Sign in to continue.')
   }

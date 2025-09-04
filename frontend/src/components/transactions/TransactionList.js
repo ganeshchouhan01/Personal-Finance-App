@@ -1,5 +1,5 @@
 // src/components/transactions/TransactionList.js
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '../../lib/utils'
 import { Edit, Trash2, Eye } from 'lucide-react'
 
 const TransactionList = ({ transactions, onDelete, onEdit }) => {

@@ -3,11 +3,11 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Layout from '@/components/layout/Layout'
-import TransactionList from '@/components/transactions/TransactionList'
-import TransactionFilters from '@/components/transactions/TransactionFilters'
+import Layout from '../../components/layout/Layout'
+import TransactionList from '../../components/transactions/TransactionList'
+import TransactionFilters from '../../components/transactions/TransactionFilters'
 import { toast } from 'sonner'
-import api from '@/lib/api'
+import api from '../../lib/api'
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([])
