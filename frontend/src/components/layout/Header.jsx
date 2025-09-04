@@ -1,8 +1,8 @@
 // src/components/layout/Header.js
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
-import ThemeToggle from '@/components/ui/ThemeToggle'
+import { useAuth } from '../../contexts/AuthContext'
+import ThemeToggle from '../../components/ui/ThemeToggle'
 
 const Header = ({ onMenuClick }) => {
   const { user, logout } = useAuth()

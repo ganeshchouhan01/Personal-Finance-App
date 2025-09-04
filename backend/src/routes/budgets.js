@@ -1,5 +1,5 @@
 import express from 'express'
-import { protect } from '../middleware/auth';
+import { protect } from '../middleware/auth.js';
 import {
   getBudgets,
   getBudget,
@@ -13,8 +13,8 @@ import {
   copyBudgetToNewPeriod,
   getBudgetSuggestions,
   toggleBudgetActiveStatus
-} from '../controllers/budgetController';
-import { validateBudget, validateObjectId, handleValidationErrors } from '../middleware/validation';
+} from '../controllers/budgetController.js';
+import { validateBudget, validateObjectId, handleValidationErrors } from '../middleware/validation.js';
 
 const router = express.Router();
 
@@ -107,4 +107,4 @@ router.post('/:id/copy', validateObjectId, copyBudgetToNewPeriod);
  */
 router.delete('/:id', validateObjectId, deleteBudget);
 
-module.exports = router;
+export default router;

@@ -1,5 +1,5 @@
 import { body, validationResult, param } from 'express-validator';
-import User from '../models/User';
+import User from '../models/User.js';
 
 // Check for validation errors
 export const handleValidationErrors = (req, res, next) => {

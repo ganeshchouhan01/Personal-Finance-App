@@ -1,12 +1,12 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
-import { sendEmail } from '../utils/emailService';
+import User from '../models/User.js';
+import { sendEmail } from '../utils/emailService.js';
 import { 
   sendVerificationEmail, 
   sendPasswordResetEmail 
-} from '../utils/emailService';
-import { logLoginAttempt } from '../utils/helpers';
+} from '../utils/emailService.js';
+import { logLoginAttempt } from '../utils/helpers.js';
 
 // Generate JWT Token
 const sendTokenResponse = (user, statusCode, res) => {
@@ -65,7 +65,7 @@ export const register = async (req, res, next) => {
 
     // Send verification email
     await sendEmail({
-      email: user.email,
+      to: user.email,
       subject: 'Email Verification - Personal Finance Tracker',
       message: `Please verify your email by clicking on the following link: ${verificationUrl}`
     });
@@ -240,7 +240,7 @@ export const forgotPassword = async (req, res, next) => {
 
     try {
       await sendEmail({
-        email: user.email,
+        to: user.email,
         subject: 'Password Reset Token',
         message: `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`
       });

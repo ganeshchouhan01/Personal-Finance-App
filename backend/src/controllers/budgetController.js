@@ -1,6 +1,6 @@
-const Budget from '../models/Budget');
-const Transaction from '../models/Transaction');
-const moment from 'moment');
+import Budget from '../models/Budget.js';
+import Transaction from '../models/Transaction.js';
+import moment from 'moment';
 
 // Get all budgets for user
 export const getBudgets = async (req, res, next) => {

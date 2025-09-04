@@ -12,6 +12,14 @@ const doc = {
 };
 
 const outputFile = './swagger-output.json';
-const endpointsFiles = ['./server.js']; // Entry point file — can also include multiple
+const endpointsFiles = [
+  './server.js',
+  './routes/auth.js',
+  './routes/transactions.js',
+  './routes/dashboard.js',
+  './routes/analytics.js',
+  './routes/export.js',
+  './routes/budgets.js'
+];
 
 swaggerGen(outputFile, endpointsFiles, doc);

@@ -1,14 +1,15 @@
 import nodemailer from 'nodemailer';
 
+let testAccount = await nodemailer.createTestAccount();
 // Create transporter
 const createTransporter = () => {
   return nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,
+    host: testAccount.smtp.host,
+    port: testAccount.smtp.port,
+     secure: testAccount.smtp.secure,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: testAccount.user,
+      pass: testAccount.pass,
     },
   });
 };
@@ -94,7 +95,7 @@ const sendEmail = async (options) => {
   try {
     const transporter = createTransporter();
     const { to, subject, template, data, attachments } = options;
-
+      console.log('[sendEmail] Options:', options); // Add this line for debugging
     // Get HTML content from template
     let html;
     if (template) {
@@ -108,10 +109,7 @@ const sendEmail = async (options) => {
     }
 
     const mailOptions = {
-      from: {
-        name: 'Personal Finance Tracker',
-        address: process.env.EMAIL_USER
-      },
+       from: 'Personal Finance Tracker <no-reply@example.com>',
       to,
       subject: options.subject || subject,
       html,
@@ -236,7 +234,7 @@ const sendSecurityAlertEmail = async (user, loginData) => {
 // Test email functionality
 const testEmailService = async () => {
   try {
-    const testEmail = process.env.TEST_EMAIL || 'test@example.com';
+    const testEmail = 'test@example.com';
     
     const result = await sendEmail({
       to: testEmail,

@@ -1,5 +1,5 @@
 // src/components/dashboard/StatsCards.js
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '../../lib/utils'
 
 const StatsCards = ({ stats }) => {
   const cards = [

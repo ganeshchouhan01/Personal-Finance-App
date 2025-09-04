@@ -1,22 +1,22 @@
 import express from 'express'
-import { protect } from '../middleware/auth';
+import { protect } from '../middleware/auth.js';
 import {
   getTransactions,
   getTransaction,
   createTransaction,
   updateTransaction,
-  deleteTransaction,
+  // deleteTransaction,
   getTransactionStats,
-  bulkCreateTransactions,
-  importTransactions,
-  getTransactionCategories,
-  addTransactionCategory,
-  getRecurringTransactions,
-  updateRecurringTransaction,
-  skipNextRecurrence,
-  cancelRecurringTransaction
-} from '../controllers/transactionController';
-import { validateTransaction, validateObjectId, handleValidationErrors } from '../middleware/validation';
+  // bulkCreateTransactions,
+  // importTransactions,
+  // getTransactionCategories,
+  // addTransactionCategory,
+  // getRecurringTransactions,
+  // updateRecurringTransaction,
+  // skipNextRecurrence,
+  // cancelRecurringTransaction
+} from '../controllers/transactionController.js';
+import { validateTransaction, validateObjectId, handleValidationErrors } from '../middleware/validation.js';
 // const upload from '../middleware/upload');
 
 const router = express.Router();
@@ -123,4 +123,5 @@ router.put('/:id', validateObjectId, validateTransaction, handleValidationErrors
  */
 // router.delete('/recurring/:id', validateObjectId, cancelRecurringTransaction);
 
-module.exports = router;
+
+export default router;

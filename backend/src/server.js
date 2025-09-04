@@ -6,12 +6,9 @@ import helmet from 'helmet';
 import dotenv from 'dotenv'
 import { generalLimiter, authLimiter } from './middleware/rateLimit.js';
 import swaggerUi from 'swagger-ui-express';
-let swaggerFile;
-(async () => {
-  swaggerFile = (await import('./swagger-output.json', {
-    assert: { type: 'json' }
-  })).default;
-})();
+import { readFile } from 'fs/promises';
+import { createRequire } from 'module';
+
 dotenv.config();
 
 import authRoutes from './routes/auth.js';
@@ -21,8 +18,6 @@ import analytics from './routes/analytics.js';
 import exportRoutes from './routes/export.js';
 import budgets from './routes/budgets.js';
 
-
-
 const app = express();
 
 // Middleware
@@ -30,6 +25,31 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Load Swagger JSON file
+let swaggerFile;
+try {
+  // Method 1: Using fs/promises to read the JSON file
+  swaggerFile = JSON.parse(await readFile(new URL('./swagger-output.json', import.meta.url)));
+} catch (error) {
+  console.error('Error loading Swagger file:', error);
+  // Fallback: create a basic Swagger spec if file can't be loaded
+  swaggerFile = {
+    openapi: '3.0.0',
+    info: {
+      title: 'Personal Finance Tracker API',
+      version: '1.0.0',
+      description: 'API documentation for Personal Finance Tracker'
+    },
+    servers: [
+      {
+        url: `http://localhost:${process.env.PORT || 5000}/api`,
+        description: 'Development server'
+      }
+    ]
+  };
+}
+
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // Health check - moved before other routes
@@ -40,7 +60,8 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
-app.use('/api/auth/', authLimiter);
+
+// app.use('/api/auth/', authLimiter);
 app.use('/api/', generalLimiter);
 
 // API Routes
@@ -49,7 +70,9 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/analytics', analytics);
 app.use('/api/export', exportRoutes);
-// app.use('/api/budgets', budgets);
+app.use('/api/budgets', budgets);
+
+
 
 // Error handling middleware - must come last
 app.use((err, req, res, next) => {
@@ -101,6 +124,7 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`Health check: http://localhost:${PORT}/api/health`);
+      console.log(`API docs: http://localhost:${PORT}/api/docs`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

@@ -1,5 +1,5 @@
 import express from 'express'
-import { protect } from '../middleware/auth';
+import { protect } from '../middleware/auth.js';
 import {
   exportTransactionsCSV,
   exportFinancialReport,
@@ -11,7 +11,7 @@ import {
   deleteExportTemplate,
   exportBudgetReport,
   exportNetWorthStatement
-} from '../controllers/exportController';
+} from '../controllers/exportController.js';
 
 const router = express.Router();
 

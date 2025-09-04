@@ -129,4 +129,4 @@ router.post('/logout', logout);
 //  */
 // router.delete('/account', deleteAccount);
 
-// module.exports = router;
+export default router;

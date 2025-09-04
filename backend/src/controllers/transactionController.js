@@ -1,6 +1,6 @@
-const Transaction from '../models/Transaction');
-const Budget from '../models/Budget');
-const { checkBudgetAlerts } from '../utils/notifications');
+import Transaction from '../models/Transaction.js';
+import Budget from '../models/Budget.js';
+import { checkBudgetAlerts } from '../utils/notifications.js';
 
 // Get all transactions with filtering, sorting, and pagination
 export const getTransactions = async (req, res, next) => {

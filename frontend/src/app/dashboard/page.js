@@ -2,12 +2,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
-import Layout from '@/components/layout/Layout'
-import StatsCards from '@/components/dashboard/StatsCards'
-import ExpenseChart from '@/components/dashboard/ExpenseChart'
-import RecentTransactions from '@/components/dashboard/RecentTransactions'
-import api from '@/lib/api'
+import { useAuth } from '../../contexts/AuthContext'
+import Layout from '../../components/layout//Layout'
+import StatsCards from '../../components/dashboard/StatsCards'
+import ExpenseChart from '../../components/dashboard/ExpenseChart'
+import RecentTransactions from '../../components/dashboard/RecentTransactions'
+import api from '../../lib/api'
 
 const Dashboard = () => {
   const { user } = useAuth()

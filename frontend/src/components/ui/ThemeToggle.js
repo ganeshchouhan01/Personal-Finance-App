@@ -1,7 +1,7 @@
 // src/components/ui/ThemeToggle.js
 'use client'
 
-import { useTheme } from '@/contexts/ThemeContext'
+import { useTheme } from '../../contexts/ThemeContext'
 import { Moon, Sun } from 'lucide-react'
 
 const ThemeToggle = () => {

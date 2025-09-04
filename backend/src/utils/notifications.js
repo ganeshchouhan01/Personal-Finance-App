@@ -1,7 +1,7 @@
-const Budget from '../models/Budget');
-const Transaction from '../models/Transaction');
-const { sendBudgetAlertEmail } from './emailService');
-const moment from 'moment');
+import Budget from '../models/Budget.js';
+import Transaction from '../models/Transaction.js';
+import { sendBudgetAlertEmail } from './emailService.js';
+import moment from 'moment';
 
 // Check budget alerts
 export const checkBudgetAlerts = async (userId, category, amount, date) => {
@@ -298,4 +298,3 @@ export const getUnreadNotificationsCount = async (userId) => {
   }
 };
 
-module.exports = exports;
