@@ -58,16 +58,34 @@ const ExpenseChart = () => {
   return date.toISOString().split('T')[0]
 }
 
-  
+
   const fetchChartData = async () => {
   try {
     setLoading(true)
-
+  let monthsParam;
+    switch (timeRange) {
+      case 'week':
+        monthsParam = 1; // Show 4 weeks of data
+        break;
+      case 'month':
+        monthsParam = 3; // Show 3 months of data
+        break;
+      case 'quarter':
+        monthsParam = 12; // Show 4 quarters (12 months) of data
+        break;
+      case 'year':
+        monthsParam = 36; // Show 3 years (36 months) of data
+        break;
+      default:
+        monthsParam = 3; // Default to 3 months
+    }
     // 🟦 1. Fetch bar chart data (income vs expense)
     const barRes = await api.get('/analytics/income-vs-expense', {
       params: {
-        period: timeRange === 'week' ? 'weekly' : timeRange === 'quarter' ? 'quarterly' : 'monthly',
-        months: 12,
+        period: timeRange === 'week' ? 'weekly' : 
+                timeRange === 'quarter' ? 'quarterly' : 
+                timeRange === 'year' ? 'yearly' : 'monthly',
+        months: monthsParam,
       },
     })
 
@@ -84,11 +102,13 @@ const ExpenseChart = () => {
 
     const pieData = pieRes.data?.data || []
 
-    setChartData(barData)
-      setPieData(formattedPieData.length > 0 ? formattedPieData : mockPieData)
+    setChartData(barData.length>0 ? barData: mockBarData)
+    setPieData(pieData.length > 0 ? pieData : mockPieData)
   } catch (error) {
     console.error('Error fetching chart data:', error)
     toast.error('Failed to load chart data')
+    setPieData(mockPieData)
+    setChartData(mockBarData)
   } finally {
     setLoading(false)
   }

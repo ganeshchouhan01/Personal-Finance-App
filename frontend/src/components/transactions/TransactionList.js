@@ -1,6 +1,6 @@
 // src/components/transactions/TransactionList.js
 import { formatCurrency, formatDate } from '../../lib/utils'
-import { Edit, Trash2, Eye } from 'lucide-react'
+import { Edit, Trash2 } from 'lucide-react'
 
 const TransactionList = ({ transactions, onDelete, onEdit }) => {
   if (transactions.length === 0) {

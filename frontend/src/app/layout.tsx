@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { AuthProvider } from '../contexts/AuthContext'
 import { ThemeProvider } from '../contexts/ThemeContext'
 import { Toaster } from 'sonner'
+import type { AppProps } from "next/app"
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -14,8 +15,8 @@ export const metadata = {
 
 export default function RootLayout({ children }:any) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+    <html lang="en" className={`${inter.className}`} suppressHydrationWarning>
+      <body className="min-h-screen bg-white dark:bg-gray-900 transition-colors">
         <ThemeProvider>
           <AuthProvider>
             {children}

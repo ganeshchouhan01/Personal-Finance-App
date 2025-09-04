@@ -1,4 +1,3 @@
-// src/app/analytics/page.js
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -6,17 +5,17 @@ import { useAuth } from '../../contexts/AuthContext'
 import { toast } from 'sonner'
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, LineChart, Line, Legend, AreaChart, Area 
+  PieChart, Pie, Cell, Legend, AreaChart, Area 
 } from 'recharts'
 import { 
-  TrendingUp, PieChart as PieChartIcon, Calendar, DollarSign, 
-  Download, Filter, ArrowUp, ArrowDown, CreditCard, Wallet 
+  TrendingUp, PieChart as PieChartIcon,  
+  Download, Filter, ArrowUp, ArrowDown,  Wallet 
 } from 'lucide-react'
+import Layout from '../../components/layout/Layout'
 
 const AnalyticsPage = () => {
   const [transactions, setTransactions] = useState([])
   const [timeRange, setTimeRange] = useState('month')
-  const [chartType, setChartType] = useState('bar')
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
   const { user } = useAuth()
@@ -149,6 +148,7 @@ const AnalyticsPage = () => {
 
   if (loading) {
     return (
+      <Layout>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
@@ -165,10 +165,12 @@ const AnalyticsPage = () => {
           </div>
         </div>
       </div>
+      </Layout>
     )
   }
 
   return (
+    <Layout>
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -418,6 +420,7 @@ const AnalyticsPage = () => {
         </div>
       </div>
     </div>
+    </Layout>
   )
 }
 

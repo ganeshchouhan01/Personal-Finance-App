@@ -4,7 +4,8 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { toast } from 'sonner'
-import { Eye, EyeOff, Calendar, DollarSign, Tag, Receipt } from 'lucide-react'
+import { Eye, EyeOff, Calendar, Receipt, ArrowDownCircle, ArrowUpCircle } from 'lucide-react'
+import api from '../../lib/api'
 
 const RecentTransactions = ({ limit = 5, showViewAll = true }) => {
   const [transactions, setTransactions] = useState([])
@@ -18,11 +19,24 @@ const RecentTransactions = ({ limit = 5, showViewAll = true }) => {
 
   const fetchRecentTransactions = async () => {
     try {
-      // In a real app, you would fetch from your API
-      // const response = await fetch('/api/transactions?limit=' + limit)
-      // const data = await response.json()
+      setLoading(true)
       
-      // Mock data for demonstration
+      // Fetch recent transactions from the API
+      const response = await api.get('/transactions/recent', {
+        params: {
+          limit: limit
+        }
+      })
+      
+      if (response.data.success) {
+        setTransactions(response.data.data)
+      } else {
+        throw new Error('Failed to fetch transactions')
+      }
+    } catch (error) {
+      console.error('Error fetching transactions:', error)
+      
+      // Fallback to mock data if API fails
       const mockTransactions = [
         {
           _id: '1',
@@ -30,7 +44,7 @@ const RecentTransactions = ({ limit = 5, showViewAll = true }) => {
           amount: -125.50,
           category: 'Groceries',
           date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-          note: 'Weekly grocery shopping',
+          description: 'Weekly grocery shopping',
           paymentMethod: 'credit_card'
         },
         {
@@ -39,7 +53,7 @@ const RecentTransactions = ({ limit = 5, showViewAll = true }) => {
           amount: 2500.00,
           category: 'Salary',
           date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-          note: 'Monthly salary',
+          description: 'Monthly salary',
           paymentMethod: 'bank_transfer'
         },
         {
@@ -48,7 +62,7 @@ const RecentTransactions = ({ limit = 5, showViewAll = true }) => {
           amount: -45.00,
           category: 'Entertainment',
           date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-          note: 'Movie tickets',
+          description: 'Movie tickets',
           paymentMethod: 'debit_card'
         },
         {
@@ -57,7 +71,7 @@ const RecentTransactions = ({ limit = 5, showViewAll = true }) => {
           amount: -89.99,
           category: 'Utilities',
           date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-          note: 'Electricity bill',
+          description: 'Electricity bill',
           paymentMethod: 'bank_transfer'
         },
         {
@@ -66,15 +80,13 @@ const RecentTransactions = ({ limit = 5, showViewAll = true }) => {
           amount: 150.00,
           category: 'Freelance',
           date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
-          note: 'Website project',
+          description: 'Website project',
           paymentMethod: 'paypal'
         }
       ]
-
+      
       setTransactions(mockTransactions)
-    } catch (error) {
-      console.error('Error fetching transactions:', error)
-      toast.error('Failed to load transactions')
+      toast.error('Failed to load transactions. Showing sample data.')
     } finally {
       setLoading(false)
     }
@@ -98,16 +110,10 @@ const RecentTransactions = ({ limit = 5, showViewAll = true }) => {
     })
   }
 
-  const getTransactionIcon = (category) => {
-    const icons = {
-      Groceries: '🛒',
-      Salary: '💰',
-      Entertainment: '🎬',
-      Utilities: '💡',
-      Freelance: '💼',
-      default: '💳'
-    }
-    return icons[category] || icons.default
+  const getTransactionIcon = (type) => {
+    return type === 'income' 
+      ? <ArrowUpCircle className="w-5 h-5 text-green-500" /> 
+      : <ArrowDownCircle className="w-5 h-5 text-red-500" />
   }
 
   const displayedTransactions = showAll ? transactions : transactions.slice(0, limit)
@@ -140,12 +146,22 @@ const RecentTransactions = ({ limit = 5, showViewAll = true }) => {
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
           Recent Transactions
         </h2>
-        {showViewAll && (
+        {showViewAll && transactions.length > limit && (
           <button
             onClick={() => setShowAll(!showAll)}
-            className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+            className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium flex items-center"
           >
-            {showAll ? 'Show Less' : 'View All'}
+            {showAll ? (
+              <>
+                <EyeOff className="w-4 h-4 mr-1" />
+                Show Less
+              </>
+            ) : (
+              <>
+                <Eye className="w-4 h-4 mr-1" />
+                View All
+              </>
+            )}
           </button>
         )}
       </div>
@@ -159,42 +175,48 @@ const RecentTransactions = ({ limit = 5, showViewAll = true }) => {
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {displayedTransactions.map((transaction) => (
             <div
               key={transaction._id}
               className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
             >
               <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                  <span className="text-lg">{getTransactionIcon(transaction.category)}</span>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  transaction.type === 'income' 
+                    ? 'bg-green-100 dark:bg-green-900/30' 
+                    : 'bg-red-100 dark:bg-red-900/30'
+                }`}>
+                  {getTransactionIcon(transaction.type)}
                 </div>
-                <div>
-                  <h3 className="font-medium text-gray-900 dark:text-white">
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-medium text-gray-900 dark:text-white truncate">
                     {transaction.category}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
-                    <Calendar className="w-3 h-3 mr-1" />
-                    {formatDate(transaction.date)}
-                    {transaction.note && (
-                      <>
-                        <span className="mx-2">•</span>
-                        {transaction.note}
-                      </>
-                    )}
+                  <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center truncate">
+                    <Calendar className="w-3 h-3 mr-1 flex-shrink-0" />
+                    <span className="truncate">
+                      {formatDate(transaction.date)}
+                      {transaction.description && (
+                        <>
+                          <span className="mx-2">•</span>
+                          {transaction.description}
+                        </>
+                      )}
+                    </span>
                   </p>
                 </div>
               </div>
               
-              <div className="text-right">
+              <div className="text-right ml-4">
                 <p
                   className={`font-semibold ${
-                    transaction.amount > 0
+                    transaction.type === 'income'
                       ? 'text-green-600 dark:text-green-400'
                       : 'text-red-600 dark:text-red-400'
                   }`}
                 >
-                  {transaction.amount > 0 ? '+' : ''}{formatCurrency(transaction.amount)}
+                  {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
                   {transaction.paymentMethod?.replace('_', ' ')}
@@ -209,8 +231,9 @@ const RecentTransactions = ({ limit = 5, showViewAll = true }) => {
         <div className="mt-4 text-center">
           <button
             onClick={() => setShowAll(true)}
-            className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+            className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium inline-flex items-center"
           >
+            <Eye className="w-4 h-4 mr-1" />
             +{transactions.length - limit} more transactions
           </button>
         </div>

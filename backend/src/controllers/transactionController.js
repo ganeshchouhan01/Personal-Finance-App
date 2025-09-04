@@ -225,3 +225,36 @@ export const getTransactionStats = async (req, res, next) => {
     next(error);
   }
 };
+// src/controllers/transactionController.js
+
+// Get recent transactions
+export const getRecentTransactions = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit) || 5;
+    
+    const recentTransactions = await Transaction.find({
+      user: req.user._id
+    })
+    .sort({ date: -1, createdAt: -1 })
+    .limit(limit)
+    .select('type amount category date description paymentMethod');
+    
+    res.status(200).json({
+      success: true,
+      data: recentTransactions
+    });
+  } catch (error) {
+    console.error('Error fetching recent transactions:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching recent transactions'
+    });
+  }
+};
+
+// Helper function to get week number
+const getWeek = (date) => {
+  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+  const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+  return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+};

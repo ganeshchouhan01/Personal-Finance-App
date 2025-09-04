@@ -16,16 +16,23 @@ export const useTheme = () => {
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState('light')
 
-  useEffect(() => {
+   useEffect(() => {
     const savedTheme = localStorage.getItem('theme')
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    
-    setTheme(savedTheme || systemTheme)
+
+    const initialTheme = savedTheme || systemTheme
+    setTheme(initialTheme)
+
+    if (initialTheme === 'dark') {
+      document.body.classList.add('dark')
+    } else {
+      document.body.classList.remove('dark')
+    }
   }, [])
 
   useEffect(() => {
     localStorage.setItem('theme', theme)
-    document.documentElement.classList.toggle('dark', theme === 'dark')
+    document.body.classList.toggle('dark', theme === 'dark')
   }, [theme])
 
   const toggleTheme = () => {

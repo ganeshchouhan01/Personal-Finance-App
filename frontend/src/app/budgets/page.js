@@ -4,7 +4,8 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { toast } from 'sonner'
-import { Plus, TrendingUp, TrendingDown, Edit3, Trash2, PieChart, Target, Calendar, DollarSign } from 'lucide-react'
+import { Plus, TrendingUp, TrendingDown, Edit3, Trash2, PieChart, Target, DollarSign } from 'lucide-react'
+import Layout from '../../components/layout/Layout'
 
 export default function BudgetsPage() {
   const [budgets, setBudgets] = useState([])
@@ -169,11 +170,6 @@ export default function BudgetsPage() {
     return 'bg-red-500'
   }
 
-  const getCategorySpending = (category) => {
-    return transactions
-      .filter(t => t.category === category && t.type === 'expense')
-      .reduce((sum, t) => sum + Math.abs(t.amount), 0)
-  }
 
   const formatCurrency = (amount) => {
     const currency = user?.currency || 'USD'
@@ -186,6 +182,7 @@ export default function BudgetsPage() {
 
   if (loading) {
     return (
+      <Layout>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
         <div className="max-w-6xl mx-auto">
           <div className="animate-pulse">
@@ -202,10 +199,12 @@ export default function BudgetsPage() {
           </div>
         </div>
       </div>
+      </Layout>
     )
   }
 
   return (
+    <Layout>
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -469,5 +468,6 @@ export default function BudgetsPage() {
         )}
       </div>
     </div>
+    </Layout>
   )
 }

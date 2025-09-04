@@ -11,7 +11,6 @@ import {
   verifyEmail,
 //   resendVerification,
 //   enableTwoFactor,
-//   verifyTwoFactor,
 //   disableTwoFactor,
 //   getLoginHistory,
 //   deleteAccount
@@ -71,7 +70,7 @@ router.get('/verify-email/:token', verifyEmail);
 //  * @desc    Get current logged in user
 //  * @access  Private
 //  */
-router.get('/me', getMe);
+router.get('/me',protect, getMe);
 
 // /**
 //  * @route   PUT /api/auth/updatedetails
@@ -94,19 +93,7 @@ router.get('/me', getMe);
 //  */
 router.post('/logout', logout);
 
-// /**
-//  * @route   POST /api/auth/enable-2fa
-//  * @desc    Enable two-factor authentication
-//  * @access  Private
-//  */
-// router.post('/enable-2fa', enableTwoFactor);
 
-// /**
-//  * @route   POST /api/auth/verify-2fa
-//  * @desc    Verify two-factor authentication
-//  * @access  Private
-//  */
-// router.post('/verify-2fa', verifyTwoFactor);
 
 // /**
 //  * @route   POST /api/auth/disable-2fa

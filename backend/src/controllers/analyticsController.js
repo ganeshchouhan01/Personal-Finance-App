@@ -65,7 +65,6 @@ export const getCategorySpending = async (req, res, next) => {
       user: req.user._id,
       type: type
     };
-
     if (startDate || endDate) {
       matchStage.date = {};
       if (startDate) matchStage.date.$gte = new Date(startDate);
@@ -85,14 +84,21 @@ export const getCategorySpending = async (req, res, next) => {
       { $sort: { totalAmount: -1 } }
     ]);
 
+    // ✅ Transform data for pie chart
+    const pieData = categorySpending.map(item => ({
+      name: item._id,
+      value: item.totalAmount
+    }));
+
     res.status(200).json({
       success: true,
-      data: categorySpending
+      data: pieData
     });
   } catch (error) {
     next(error);
   }
 };
+
 
 // Get spending trends over time
  export const getSpendingTrends = async (req, res, next) => {
@@ -315,6 +321,49 @@ export const getTopExpenses = async (req, res, next) => {
 };
 
 // Get income vs expense comparison
+// export const getIncomeVsExpense = async (req, res, next) => {
+//   try {
+//     const { period = 'monthly', months = 12 } = req.query;
+//     const startDate = moment().subtract(parseInt(months), 'months').toDate();
+//     const endDate = moment().toDate();
+
+//     const comparisonData = await Transaction.aggregate([
+//       {
+//         $match: {
+//           user: req.user._id,
+//           date: { $gte: startDate, $lte: endDate }
+//         }
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             type: '$type',
+//             period: period === 'monthly' ? { 
+//               year: { $year: '$date' },
+//               month: { $month: '$date' }
+//             } : period === 'quarterly' ? {
+//               year: { $year: '$date' },
+//               quarter: { $ceil: { $divide: [{ $month: '$date' }, 3] } }
+//             } : {
+//               year: { $year: '$date' }
+//             }
+//           },
+//           totalAmount: { $sum: '$amount' }
+//         }
+//       },
+//       {
+//         $sort: { '_id.period.year': 1, '_id.period.month': 1, '_id.period.quarter': 1 }
+//       }
+//     ]);
+
+//     res.status(200).json({
+//       success: true,
+//       data: comparisonData
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 export const getIncomeVsExpense = async (req, res, next) => {
   try {
     const { period = 'monthly', months = 12 } = req.query;
@@ -332,7 +381,10 @@ export const getIncomeVsExpense = async (req, res, next) => {
         $group: {
           _id: {
             type: '$type',
-            period: period === 'monthly' ? { 
+            period: period === 'weekly' ? {
+              year: { $year: '$date' },
+              week: { $week: '$date' }
+            } : period === 'monthly' ? { 
               year: { $year: '$date' },
               month: { $month: '$date' }
             } : period === 'quarterly' ? {
@@ -346,17 +398,122 @@ export const getIncomeVsExpense = async (req, res, next) => {
         }
       },
       {
-        $sort: { '_id.period.year': 1, '_id.period.month': 1, '_id.period.quarter': 1 }
+        $sort: { 
+          '_id.period.year': 1, 
+          '_id.period.week': 1, 
+          '_id.period.month': 1, 
+          '_id.period.quarter': 1 
+        }
       }
     ]);
 
+    // Transform the data into the format expected by the frontend
+    const formattedData = formatIncomeExpenseData(comparisonData, period, parseInt(months));
+    
     res.status(200).json({
       success: true,
-      data: comparisonData
+      data: formattedData
     });
   } catch (error) {
     next(error);
   }
+};
+
+// Helper function to format the data for the frontend
+const formatIncomeExpenseData = (rawData, period, monthsCount) => {
+  // Create an empty array for all periods
+  const periods = [];
+  const currentDate = moment();
+  
+  // Determine the number of periods to show based on the time range
+  let periodCount;
+  let periodUnit;
+  
+  switch (period) {
+    case 'weekly':
+      periodCount = Math.ceil(monthsCount * 4.345); // Approximate weeks in months
+      periodUnit = 'weeks';
+      break;
+    case 'monthly':
+      periodCount = monthsCount;
+      periodUnit = 'months';
+      break;
+    case 'quarterly':
+      periodCount = Math.ceil(monthsCount / 3);
+      periodUnit = 'months';
+      break;
+    case 'yearly':
+      periodCount = Math.ceil(monthsCount / 12);
+      periodUnit = 'years';
+      break;
+    default:
+      periodCount = 12;
+      periodUnit = 'months';
+  }
+  
+  // Generate all periods with empty data
+  for (let i = periodCount - 1; i >= 0; i--) {
+    let periodDate;
+    let periodLabel;
+    let periodKey;
+    
+    if (period === 'weekly') {
+      periodDate = moment(currentDate).subtract(i, 'weeks');
+      periodLabel = `W${periodDate.week()} ${periodDate.year()}`;
+      periodKey = `${periodDate.year()}-${periodDate.week()}`;
+    } else if (period === 'monthly') {
+      periodDate = moment(currentDate).subtract(i, 'months');
+      periodLabel = periodDate.format('MMM YY');
+      periodKey = `${periodDate.year()}-${periodDate.month() + 1}`;
+    } else if (period === 'quarterly') {
+      periodDate = moment(currentDate).subtract(i * 3, 'months');
+      const quarter = Math.ceil((periodDate.month() + 1) / 3);
+      periodLabel = `Q${quarter} ${periodDate.year()}`;
+      periodKey = `${periodDate.year()}-${quarter}`;
+    } else {
+      periodDate = moment(currentDate).subtract(i, 'years');
+      periodLabel = periodDate.year().toString();
+      periodKey = periodDate.year().toString();
+    }
+    
+    periods.push({
+      periodKey,
+      periodLabel,
+      income: 0,
+      expense: 0
+    });
+  }
+  
+  // Fill in the data from the aggregation
+  rawData.forEach(item => {
+    let periodKey;
+    
+    if (period === 'weekly') {
+      periodKey = `${item._id.period.year}-${item._id.period.week}`;
+    } else if (period === 'monthly') {
+      periodKey = `${item._id.period.year}-${item._id.period.month}`;
+    } else if (period === 'quarterly') {
+      periodKey = `${item._id.period.year}-${item._id.period.quarter}`;
+    } else {
+      periodKey = item._id.period.year.toString();
+    }
+    
+    const periodItem = periods.find(p => p.periodKey === periodKey);
+    if (periodItem) {
+      if (item._id.type === 'income') {
+        periodItem.income = item.totalAmount;
+      } else if (item._id.type === 'expense') {
+        periodItem.expense = item.totalAmount;
+      }
+    }
+  });
+  
+  // Convert to the format expected by the frontend
+  return periods.map(period => ({
+    name: period.periodLabel,
+    income: period.income,
+    expense: period.expense
+  }));
 };
 
 // Get cash flow analysis

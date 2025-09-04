@@ -5,8 +5,10 @@ import {
   getTransaction,
   createTransaction,
   updateTransaction,
-  // deleteTransaction,
+  deleteTransaction,
   getTransactionStats,
+   getRecentTransactions, 
+
   // bulkCreateTransactions,
   // importTransactions,
   // getTransactionCategories,
@@ -30,6 +32,7 @@ router.use(protect);
  * @query   page, limit, type, category, startDate, endDate, etc.
  */
 router.get('/', getTransactions);
+
 
 /**
  * @route   GET /api/transactions/stats
@@ -60,6 +63,7 @@ router.get('/stats', getTransactionStats);
  */
 router.get('/:id', validateObjectId, getTransaction);
 
+router.get('/recent', getRecentTransactions);
 /**
  * @route   POST /api/transactions
  * @desc    Create new transaction
@@ -114,7 +118,7 @@ router.put('/:id', validateObjectId, validateTransaction, handleValidationErrors
  * @desc    Delete transaction
  * @access  Private
  */
-// router.delete('/:id', validateObjectId, deleteTransaction);
+router.delete('/:id', validateObjectId, deleteTransaction);
 
 /**
  * @route   DELETE /api/transactions/recurring/:id
